@@ -1,4 +1,4 @@
-# AppDaemon
+# AppDaemon-Scripts
 AppDaemon scripts for Home Assistant
 
 ## Requirements
