@@ -1,7 +1,9 @@
-AppDaemon
+#AppDaemon
 AppDaemon scripts for Home Assistant
-#Requirements
+
+##Requirements
 Home Assistant and AppDaemon or Hass.io with AppDaemon integration
 https://appdaemon.readthedocs.io/en/latest/INSTALL.html 
-#Directions
+
+##Directions
 Place scripts in /conf/apps/ in your AppDaemon install location.
