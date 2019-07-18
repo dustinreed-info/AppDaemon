@@ -6,11 +6,17 @@ import pytz
 tz = pytz.timezone('America/Chicago')
 class Light(hass.Hass):
     def initialize(self):
+        '''
+        Pulls arguments from apps.yaml and sets variables.
+        Listens to light events based upon time.
+        '''
+        #Sets flag if not already set.  flag is used to ensure the light stays off if it is in the middle of fade_in().
         try:
             if self.flag == None:
                 self.flag = 0
         except: 
             self.flag = 0
+        #Pulls arguments from apps.yaml 
         try:
             self.light = self.args['name']
             self.time = self.args['time']
@@ -18,6 +24,7 @@ class Light(hass.Hass):
             self.end = self.args['end']
             self.step = self.args['step']
             self.delay = self.args['delay']
+            #Listens to light events and will turn on or fade in depending on the time.
             self.listen_event(self.fade_in, event=self.args['lighton'],
                 constrain_start_time=self.time['start'], constrain_end_time=self.time['end'], new = 'on' )
             self.listen_event(self.light_on, event=self.args['lighton'], 
@@ -30,6 +37,7 @@ class Light(hass.Hass):
     def get_color_temp(self):
         try:
             return self.color_temp
+        #If color temp not set, then set to warmest temperature bulbs can handle.
         except:
             self.color_temp = 490
             return self.color_temp
@@ -38,6 +46,10 @@ class Light(hass.Hass):
         return self.start
 
     def light_schedule(self, *args):
+        '''
+        Sets a light schedule that adjusted the lights color temperature and brightness
+        depending on the time.
+        '''
         if self.light[0:5] == 'light':
             self.log(self.light)
             self.log('Adjusting Kelvin Schedule')
@@ -62,6 +74,12 @@ class Light(hass.Hass):
                 self.light_on(self.light, self.brightness, self.color_temp)
             
     def fade_in(self, *args):
+        '''
+        Increases lights brightness and changes color temperature from warm to cool.
+        Values are pulled from apps.yaml
+        - step is the rate of change multiplier
+        - delay increases the delay between step
+        '''
         self.log(f'fade_in: {self.light} starting brightness: {self.get_start()}')
         self.flag = 0
         start = self.get_start()
@@ -73,7 +91,8 @@ class Light(hass.Hass):
 
         def step_counter(self, start, step, target_temp, *args):            
             start += step
-            if target_temp < self.color_temp: 
+            if target_temp < self.color_temp:
+                # Adjust step multiplier if you want color temperature change rate.
                 self.color_temp = self.color_temp - step * 2.5
             return start
 
@@ -83,10 +102,16 @@ class Light(hass.Hass):
             if self.flag == 1:
                 break
         time.sleep(delay)
-        self.log('broke free from fade in')
+        self.log('broke free from fade in') 
         self.terminate()
 
     def fade_out(self, *args):
+        '''
+        Decreases lights brightness and changes color temperature from warm to cool.
+        Values are pulled from apps.yaml
+        - step is the rate of change multiplier
+        - delay increases the delay between step
+        '''
         self.flag = 0
         name = self.light
         start = self.get_start()
@@ -96,6 +121,7 @@ class Light(hass.Hass):
         while end >= start and self.flag == 0:
             self.log(start)
             self.light_on(name, end, self.color_temp)
+            # Adjust step multiplier if you want to adjust rate of change for brightness or color temp.
             end -= step * 5
             self.color_temp -= step
             if self.flag == 1:
@@ -109,6 +135,10 @@ class Light(hass.Hass):
 
         
     def light_on (self, name, start, color_temp):
+        '''
+        Checks to see if a light has a set brightness and turns on light.  If it does not have a set
+        brightness it runs the light_schedule function to obtain one.
+        '''
         if start == {}:
             self.log('start empty')
             try:
@@ -131,12 +161,18 @@ class Light(hass.Hass):
         self.turn_off(self.light)
 
     def terminate(self):
+        '''
+        If self.flag is On then will turn light off and log that the terminate function was used.
+        '''
         if self.flag == 1:
             self.turn_off(self.light)
             self.log("light term")
         self.log('terminated')
 
 class MotionLight(hass.Hass):
+    '''
+    Turns on motion light when the time is within 1 hour of sun rise or sun set and motion is detected.
+    '''
     def initialize(self):
         self.sensor = self.args['sensor']
         self.switch = self.args['switch']
