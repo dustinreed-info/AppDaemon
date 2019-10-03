@@ -10,7 +10,7 @@ class Light(hass.Hass):
         Pulls arguments from apps.yaml and sets variables.
         Listens to light events based upon time.
         '''
-        #Sets flag if not already set.  flag is used to ensure the light stays off if it is in the middle of fade_in().
+        #Sets flag that is used to ensure the light stays off if it is in the middle of fade_in().
         try:
             if self.flag == None:
                 self.flag = 0
@@ -87,7 +87,7 @@ class Light(hass.Hass):
         delay = self.delay
         step = self.step
         target_temp = self.get_color_temp()
-        self.color_temp = 490
+        self.color_temp = 490  # Sets color temperature to 2700k
 
         def step_counter(self, start, step, target_temp, *args):            
             start += step
@@ -102,6 +102,7 @@ class Light(hass.Hass):
             if self.flag == 1:
                 break
         time.sleep(delay)
+        self.log(f'fade_in: {self.light} ending brightness: {start} ending temperature: {self.get_color_temp()}')
         self.log('broke free from fade in') 
         self.terminate()
 
