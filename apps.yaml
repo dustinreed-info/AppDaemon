@@ -10,20 +10,20 @@ office:
   lightoff: 'officelightsoff'
   time:
     start: '07:00:00'
-    end: '22:59:00'
+    end: "22:59:00"
 bathroom:
   module: lights
   class: Light
   name: light.bathroom_lights
   start: 10
   end: 255
-  delay: 2
+  delay: 5
   step: 3
   lighton: 'bathroomlightson'
   lightoff: 'bathroomlightsoff'
   time:
     start: '07:00:00'
-    end: '13:30:00'
+    end: "13:30:00"
 upstairs:
   module: lights
   class: Light
@@ -36,7 +36,7 @@ upstairs:
   lightoff: 'upstairslightsoff'
   time:
     start: '07:00:00'
-    end: '13:30:00'
+    end: 13:30:00"
 livingroom:
   module: lights
   class: Light
@@ -49,7 +49,7 @@ livingroom:
   lightoff: 'livingroomlightsoff'
   time:
     start: '07:00:00'
-    end: '13:30:00'
+    end: "13:30:00"
 kitchen:
   module: lights
   class: MotionLight
